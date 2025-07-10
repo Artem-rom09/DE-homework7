@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  cassandra:
+    image: cassandra:4.0
+    container_name: cassandra-reviews
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    restart: always
+
+  redis:
+    image: "redis:7-alpine"
+    container_name: analytics_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  api:
+    build: ./api
+    container_name: reviews_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+    depends_on:
+      - cassandra
+      - redis
+    restart: always
+
+volumes:
+  cassandra_data:
